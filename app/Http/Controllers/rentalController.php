@@ -21,15 +21,10 @@ class rentalController extends Controller
     public function index()
     {
         $colection = colection::all();
-
-        if(!$colection)
-            return ResponseFormatter::error(null, 'data tidak ada!!', 404);
-        else
-            return ResponseFormatter::success($colection, 'Data Berhasil Diambil');
-            
+        return ResponseFormatter::success($colection, 'Data Berhasil Diambil');   
     }
 
-    public function store(Request $request)
+    public function insert(Request $request)
     {
         $this->validate($request, [
             'title' => 'required|max:255',
@@ -38,18 +33,44 @@ class rentalController extends Controller
             'quantity' => 'required|integer'
         ]);
 
-        if($validator->fails())
-            return response()->json($validator->errors());
-
         $data = $request->all();
-        $coll = collection::create($data);
-
-        return ResponseFormatter::success($coll, 'Data Berhasil Ditambah');
+        $datas = colection::create($data);
+        
+        if(!$datas)
+            return ResponseFormatter::error(null, 'Data Gagal Ditambah', 400);
+        else
+            return ResponseFormatter::success($datas, 'Data Berhasil Ditambah');
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
+
+        $this->validate($request, [
+            'title' => 'required|max:255',
+            'rate' => 'required|integer',
+            'category' => 'required',
+            'quantity' => 'required|integer'
+        ]);
+
+        $items = colection::find($request->id)->update([
+            'title' => $request->title,
+            'rate' => $request->rate,
+            'category' => $request->category,
+            'quantity' => $request->quantity
+        ]);
         
+        if($items)
+            return ResponseFormatter::success($request->all(), 'Data BerHasil Diubah');
+        else
+            return ResponseFormatter::error(null, 'Data Gagal Diubah', 400);
+    }
+
+    public function delete($id)
+    {
+        $data = colection::find($id)->first();
+        $data->delete();
+
+        return ResponseFormatter::success(null, 'Data Berhasil Dihapus');
     }
     
 }

@@ -14,6 +14,11 @@
 //     return $router->app->version();
 // });
 
-$router->get('/', 'rentalController@index');
+$router->get('/api', 'rentalController@index');
+$router->get('/inputTransaction', 'rentalController@inputTransaction');
 
-$router->post('tambahCollection', 'rentalController@store');
+$router->post('/api/tambahCollection', 'rentalController@insert');
+
+$router->post('api/{id}/updateCollection', 'rentalController@update');
+
+$router->post('api/{id}/delete', 'rentalController@delete');
