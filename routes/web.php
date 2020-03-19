@@ -14,11 +14,15 @@
 //     return $router->app->version();
 // });
 
-$router->get('/api', 'rentalController@index');
-$router->get('/inputTransaction', 'rentalController@inputTransaction');
+//collection
+$router->get('/api/collection', 'rentalController@index');
+$router->post('/api/addCollection', 'rentalController@insert');
+$router->post('api/updateCollection', 'rentalController@update');
+$router->get('api/{id}/delete', 'rentalController@delete');
 
-$router->post('/api/tambahCollection', 'rentalController@insert');
 
-$router->post('api/{id}/updateCollection', 'rentalController@update');
-
-$router->post('api/{id}/delete', 'rentalController@delete');
+//transaksi
+$router->get('api/transaction','transactionController@index');
+$router->post('api/addTransaction','transactionController@insertTransaction');
+$router->post('api/checkAmount','transactionController@checkAmount');
+$router->post('api/payTransaction','transactionController@payTransaction');

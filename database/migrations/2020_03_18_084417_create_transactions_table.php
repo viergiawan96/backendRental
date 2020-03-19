@@ -17,8 +17,8 @@ class CreateTransactionsTable extends Migration
             $table->id();
             $table->string('id_card');
             $table->integer('id_colection');
-            $table->date('date_from');
             $table->string('status');
+            $table->integer('price');
             $table->timestamps();
         });
     }

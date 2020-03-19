@@ -20,8 +20,8 @@ class rentalController extends Controller
 
     public function index()
     {
-        $colection = colection::all();
-        return ResponseFormatter::success($colection, 'Data Berhasil Diambil');   
+        $data = colection::all();
+        return ResponseFormatter::success(compact('data'), 'Data Berhasil Diambil');   
     }
 
     public function insert(Request $request)
@@ -33,17 +33,21 @@ class rentalController extends Controller
             'quantity' => 'required|integer'
         ]);
 
-        $data = $request->all();
-        $datas = colection::create($data);
+        $datas = $request->all();
+        $data = colection::create($datas);
         
         if(!$datas)
-            return ResponseFormatter::error(null, 'Data Gagal Ditambah', 400);
+            return responseValidasi::error('Data Gagal Ditambah', 400);
         else
-            return ResponseFormatter::success($datas, 'Data Berhasil Ditambah');
+            return ResponseFormatter::success(compact('data'), 'Data Berhasil Ditambah');
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
+        $cek = colection::find($request->id);
+
+        if(!$cek)
+        return responseValidasi::error('NO ID tidak ada', 400);
 
         $this->validate($request, [
             'title' => 'required|max:255',
@@ -52,25 +56,31 @@ class rentalController extends Controller
             'quantity' => 'required|integer'
         ]);
 
-        $items = colection::find($request->id)->update([
+        $items = colection::findOrFail($request->id)->update([
             'title' => $request->title,
             'rate' => $request->rate,
             'category' => $request->category,
             'quantity' => $request->quantity
         ]);
         
+        $data = $request->all();
+
         if($items)
-            return ResponseFormatter::success($request->all(), 'Data BerHasil Diubah');
+            return ResponseFormatter::success(compact('data'), 'Data BerHasil Diubah');
         else
-            return ResponseFormatter::error(null, 'Data Gagal Diubah', 400);
+            return responseValidasi::error('Data Gagal Diubah', 400);
     }
 
     public function delete($id)
     {
-        $data = colection::find($id)->first();
-        $data->delete();
-
-        return ResponseFormatter::success(null, 'Data Berhasil Dihapus');
+        $data = colection::find($id);
+        
+        if($data){
+            $data->delete();
+            return ResponseFormatter::success(null, 'Data Berhasil Dihapus');
+        }
+        else
+            return responseValidasi::error('Data Tidak Ada', 400);
     }
     
 }
