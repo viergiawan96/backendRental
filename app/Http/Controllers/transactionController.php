@@ -41,7 +41,7 @@ class transactionController extends Controller
                 return ResponseFormatter::success(compact('data'), 'Data Berhasil Ditambah');
         }
         else
-            return responseValidasi::error('Cek Kembali Quantity atau cek id colection', 400);
+            return ResponseFormatter::error('Cek Kembali Quantity atau cek id colection', 400);
     }
 
     public function checkAmount(Request $request)
@@ -67,24 +67,48 @@ class transactionController extends Controller
             return ResponseFormatter::success(compact('total'), 'Data Berhasil Diambil');
         }
         else
-            return responseValidasi::error('Cek Kembali ID Card', 400);
+            return ResponseFormatter::error('Cek Kembali ID Card', 400);
     }
     
     public function payTransaction(Request $request)
     {
+        $this->validate($request, [
+            'amount' => 'required|integer'
+        ]);
+
         $data = transaction::where('id_card', $request->id_card)
                             ->where('status', 'OPEN')
                             ->count();
 
         if($data){
 
+            $datas = transaction::where('id_card', $request->id_card)
+                                ->where('status', 'OPEN')->get();
+            $total = 0;
+            foreach($datas as $data)
+            {
+                $date = Carbon::parse($data->created_at)->diffInDays();
+                if($date)
+                    $jumlah = $date * $data->price;
+                else 
+                    $jumlah = 1 * $data->price;
+
+                $total += $jumlah;
+            }
+
+            $change = $request->amount - $total;
+
+            if($change < 0) {
+                return ResponseFormatter::error('Total uang lebih kecil dari pembayaran', 400);
+            }
+
             $data = transaction::where('id_card', $request->id_card)
                                 ->where('status', 'OPEN')
                                 ->update(['status' => 'CLOSE']);
 
-            return responseValidasi::success('Transaksi Berhasil');              
+            return ResponseFormatter::success(compact('change'));              
         }
         else
-            return responseValidasi::error('Cek Kembali ID Card', 400);
+            return ResponseFormatter::error('Cek Kembali ID Card', 400);
     }
 }

@@ -37,7 +37,7 @@ class rentalController extends Controller
         $data = colection::create($datas);
         
         if(!$datas)
-            return responseValidasi::error('Data Gagal Ditambah', 400);
+            return ResponseFormatter::error('Data Gagal Ditambah', 400);
         else
             return ResponseFormatter::success(compact('data'), 'Data Berhasil Ditambah');
     }
@@ -47,7 +47,7 @@ class rentalController extends Controller
         $cek = colection::find($request->id);
 
         if(!$cek)
-        return responseValidasi::error('NO ID tidak ada', 400);
+        return ResponseFormatter::error('No ID tidak ada', 400);
 
         $this->validate($request, [
             'title' => 'required|max:255',
@@ -68,7 +68,7 @@ class rentalController extends Controller
         if($items)
             return ResponseFormatter::success(compact('data'), 'Data BerHasil Diubah');
         else
-            return responseValidasi::error('Data Gagal Diubah', 400);
+            return ResponseFormatter::error('Data Gagal Diubah', 400);
     }
 
     public function delete($id)
@@ -80,7 +80,7 @@ class rentalController extends Controller
             return ResponseFormatter::success(null, 'Data Berhasil Dihapus');
         }
         else
-            return responseValidasi::error('Data Tidak Ada', 400);
+            return ResponseFormatter::error('Data Tidak Ada', 400);
     }
     
 }
